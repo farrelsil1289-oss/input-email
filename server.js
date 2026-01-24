@@ -58,8 +58,8 @@ app.get("/", (req, res) =>
  */
 app.post("/webhook", async (req, res) => {
   try {
-    // log singkat biar gampang debug (boleh hapus kalau sudah stabil)
-    // console.log("📩 WEBHOOK HIT", new Date().toISOString());
+    // 🔥 DEBUG: cek update masuk dari Telegram
+    console.log("📩 UPDATE MASUK:", req.body?.message?.text);
 
     await bot.processUpdate(req.body);
     res.sendStatus(200);
@@ -217,6 +217,7 @@ app.listen(PORT, () => {
   console.log("✅ Webhook endpoint: POST /webhook");
   console.log("✅ Sheet:", SHEET_NAME);
 });
+
 
 
 
