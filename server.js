@@ -133,29 +133,38 @@ bot.on("message", async (msg) => {
 const chatId = msg.chat.id;
 const rawText = (msg.caption || msg.text || "").trim();
 
-// FORMAT B:
-// #vcardfu 1500
-// T00
-// atau
-// #vcardfresh 1500
-// T00
-const lines = rawText
-  .split("\n")
-  .map(l => l.trim())
-  .filter(Boolean);
+let poin, nama;
 
-if (lines.length !== 2) return;
+/* =======================
+   FORMAT 1 BARIS
+   #vcardfu 1500 T00
+======================= */
+let m1 = rawText.match(/^#(vcardfu|vcardfresh)\s+(\d+)\s+@?(T0[0-5])$/i);
 
-// baris 1: #vcardfu 1500 / #vcardfresh 1500
-const m1 = lines[0].match(/^#(vcardfu|vcardfresh)\s+(\d+)$/i);
-if (!m1) return;
+if (m1) {
+  poin = m1[2];
+  nama = m1[3].toUpperCase();
+} else {
+  /* =======================
+     FORMAT 2 BARIS
+     #vcardfu 1500
+     T00 / @T00
+  ======================= */
+  const lines = rawText
+    .split("\n")
+    .map(l => l.trim())
+    .filter(Boolean);
 
-// baris 2: T00 - T05
-const m2 = lines[1].match(/^(T0[0-5])$/i);
-if (!m2) return;
+  if (lines.length !== 2) return;
 
-const poin = m1[2];                 // 1500
-const nama = m2[1].toUpperCase();   // T00
+  const m2 = lines[0].match(/^#(vcardfu|vcardfresh)\s+(\d+)$/i);
+  const m3 = lines[1].match(/^@?(T0[0-5])$/i);
+
+  if (!m2 || !m3) return;
+
+  poin = m2[2];
+  nama = m3[1].toUpperCase();
+}
   try {
     // ambil header baris 1
     const headerRes = await sheets.spreadsheets.values.get({
@@ -217,6 +226,7 @@ app.listen(PORT, () => {
   console.log("✅ Webhook endpoint: POST /webhook");
   console.log("✅ Sheet:", SHEET_NAME);
 });
+
 
 
 
