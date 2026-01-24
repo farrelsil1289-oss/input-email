@@ -131,15 +131,31 @@ bot.on("message", async (msg) => {
   if (!isGroupChat(msg)) return;
 
 const chatId = msg.chat.id;
-const text = (msg.caption || msg.text || "").trim();
+const rawText = (msg.caption || msg.text || "").trim();
 
-// format: T02 1500
-const match = text.match(/^(T0[0-5])\s+(\d+)$/i);
-if (!match) return;
+// FORMAT B:
+// #vcardfu 1500
+// T00
+// atau
+// #vcardfresh 1500
+// T00
+const lines = rawText
+  .split("\n")
+  .map(l => l.trim())
+  .filter(Boolean);
 
-const nama = match[1].toUpperCase(); // T00 - T05
-const poin = match[2];               // angka
+if (lines.length !== 2) return;
 
+// baris 1: #vcardfu 1500 / #vcardfresh 1500
+const m1 = lines[0].match(/^#(vcardfu|vcardfresh)\s+(\d+)$/i);
+if (!m1) return;
+
+// baris 2: T00 - T05
+const m2 = lines[1].match(/^(T0[0-5])$/i);
+if (!m2) return;
+
+const poin = m1[2];                 // 1500
+const nama = m2[1].toUpperCase();   // T00
   try {
     // ambil header baris 1
     const headerRes = await sheets.spreadsheets.values.get({
@@ -201,6 +217,7 @@ app.listen(PORT, () => {
   console.log("✅ Webhook endpoint: POST /webhook");
   console.log("✅ Sheet:", SHEET_NAME);
 });
+
 
 
 
