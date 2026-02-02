@@ -56,20 +56,18 @@ app.get("/", (req, res) =>
  * ✅ Webhook endpoint HARUS /webhook
  * Karena webhook Telegram kamu sekarang mengarah ke .../webhook
  */
-app.post("/webhook", (req, res) => {
-  res.sendStatus(200);
-
-  const updateId = req.body?.update_id;
-  if (updateId && processed.has(updateId)) {
-    console.log("♻️ DUPLIKAT DIABAIKAN:", updateId);
-    return;
-  }
-  if (updateId) markProcessed(updateId);
-
-  bot.processUpdate(req.body).catch((e) => {
-    console.error("❌ processUpdate error:", e?.message || e);
+app.post("/webhook", async (req, res) => {
+try {
+// 🔥 DEBUG: cek update masuk dari Telegram
+console.log("📩 UPDATE MASUK:",   
+req.body?.message?.text);
+await bot.processUpdate(req.body);
+res.sendStatus(200);
+} catch (e) {
+console.error("❌ Webhook error:", e?.message || e);
+res.sendStatus(500);
+}
   });
-});
 
 /* =======================
    HELPERS
@@ -228,6 +226,7 @@ app.listen(PORT, () => {
   console.log("✅ Webhook endpoint: POST /webhook");
   console.log("✅ Sheet:", SHEET_NAME);
 });
+
 
 
 
