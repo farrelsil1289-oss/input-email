@@ -139,7 +139,7 @@ let poin, nama;
    FORMAT 1 BARIS
    #vcardfu 1500 T00
 ======================= */
-let m1 = rawText.match(/^#(vcardfu|vcardfresh)\s+(\d+)\s+@?(T0[0-5])$/i);
+let m1 = rawText.match(/^#(vcardfu|vcardfresh|vcardfake)\s+(\d+)\s+@?(T0[0-5])$/i);
 
 if (m1) {
   poin = m1[2];
@@ -157,7 +157,7 @@ if (m1) {
 
   if (lines.length !== 2) return;
 
-  const m2 = lines[0].match(/^#(vcardfu|vcardfresh)\s+(\d+)$/i);
+  const m2 = lines[0].match(/^#(vcardfu|vcardfresh|vcardfake)\s+(\d+)$/i);
   const m3 = lines[1].match(/^@?(T0[0-5])$/i);
 
   if (!m2 || !m3) return;
@@ -226,6 +226,7 @@ app.listen(PORT, () => {
   console.log("✅ Webhook endpoint: POST /webhook");
   console.log("✅ Sheet:", SHEET_NAME);
 });
+
 
 
 
